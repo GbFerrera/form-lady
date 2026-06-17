@@ -5,7 +5,6 @@ import Image from "next/image";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import ScrollToPlugin from "gsap/ScrollToPlugin";
-import { useRouter } from "next/navigation";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(useGSAP, ScrollToPlugin);
@@ -49,7 +48,7 @@ const RadioGroup = ({ label, name, value, onChange }: { label: string; name: str
   </div>
 );
 
-const BodyMeasurementInput = ({ label, name, value, onChange }: { label: string, name: string, value: string, onChange: any }) => (
+const BodyMeasurementInput = ({ label, name, value, onChange }: { label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
   <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
     <span className="text-sm font-semibold text-gray-600">{label}</span>
     <div className="flex items-center gap-1">
@@ -66,46 +65,108 @@ const BodyMeasurementInput = ({ label, name, value, onChange }: { label: string,
   </div>
 );
 
+const CheckboxItem = ({ label, name, checked, onChange }: { label: string; name: string; checked: boolean; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
+  <label className="flex items-center gap-2 cursor-pointer select-none">
+    <input
+      type="checkbox"
+      name={name}
+      checked={checked}
+      onChange={onChange}
+      className="w-4 h-4 accent-[#E27E82]"
+    />
+    <span className="text-base text-gray-700">{label}</span>
+  </label>
+);
+
+const initialFormData = {
+  nome: "", indicadoPor: "", dataNascimento: "", rg: "", cpf: "",
+  estadoCivil: "", profissao: "", sexo: "", endereco: "", fone: "", email: "",
+  dataAvaliacao: "", nomeResponsavel: "", queixaPrincipal: "",
+  bebidasAlcoolicas: "", fumante: "", esporte: "", dormeBem: "",
+  restricaoAlimentar: "", dietas: "", acompanhamentoMedico: "",
+  boaDigestao: "", ingestaoAgua: "", cardiacas: "", pressao: "",
+  pressaoValor: "", gases: "", gestacoes: "", ultimaMenstruacao: "",
+  cicloRegular: "", biometria: "", tratamentoIndicado: "",
+  usaDIU: "", ginecologicas: "", ultimaConsultaMedica: "",
+  vasculares: "", reumaticas: "", alergias: "",
+  diabetes: "", glicemia: "", renal: "", proteseMetalica: "",
+  outrasDisfuncoes: "", outrasDisfuncoesQuais: "",
+  tratamentoMedico: "", tratamentoMedicoQual: "",
+  gravida: "", usandoMedicamento: "", usandoMedicamentoQual: "",
+  medicamentoProlongado: "", medicamentoProlongadoQual: "",
+  peso: "", busto: "", bracoEsq: "", bracoDir: "",
+  abdomen: "", cintura: "", quadril: "", culote: "",
+  coxaEsq: "", coxaDir: "", panturrilhaEsq: "", panturrilhaDir: "",
+  facialFototipo: "",
+  facialBiotipoCutaneo: "",
+  facialAcne: "",
+  facialLesoesComedoes: false,
+  facialLesoesPustulas: false,
+  facialLesoesPapulas: false,
+  facialLesoesNodulos: false,
+  facialLesoesMilium: false,
+  facialLesoesVerrugas: false,
+  facialLesoesNecrose: false,
+  facialMelaninaEfelides: false,
+  facialMelaninaHipocromia: false,
+  facialMelaninaAcromia: false,
+  facialMelaninaHipercromia: false,
+  facialMelaninaMelasma: false,
+  facialMelaninaCloasma: false,
+  facialVascularPetequias: false,
+  facialVascularHematoma: false,
+  facialVascularTelangectasias: false,
+  facialVascularAngioma: false,
+  facialVascularCianose: false,
+  facialVascularEritema: false,
+  facialConteudoLiquidoBolha: false,
+  facialConteudoLiquidoPustula: false,
+  facialConteudoLiquidoVesicula: false,
+  facialLesaoPeleCrosta: false,
+  facialLesaoPeleUlceracao: false,
+  facialLesaoPeleFistula: false,
+  facialLesaoPeleEscoriacao: false,
+  facialLesaoPeleDescamacao: false,
+  facialLesaoPeleFissura: false,
+  facialSequelaAtrofia: false,
+  facialSequelaCicatriz: false,
+  facialSequelaQueratinizacao: false,
+  facialSequelaEczema: false,
+  facialSequelaHiperqueratose: false,
+  facialSequelaPsoriase: false,
+  facialAlergia: "",
+  facialDiabetes: "",
+  facialNeoplasias: "",
+  facialNeoplasiasQual: "",
+  facialDoencasPele: "",
+  facialDoencasPeleQual: "",
+  facialDoencasSistemicas: "",
+  facialDoencasSistemicasQual: "",
+  facialTomaMedicamentos: "",
+  facialTomaMedicamentosQual: "",
+  facialEpilepsia: "",
+  facialPinoPlacaMetalicaRosto: "",
+  facialTratamentoEsteticoRecente: "",
+  facialUsaLentesContato: "",
+  facialProdutosDiaADia: "",
+  facialTratamentoIndicado: ""
+};
+
 export default function Home() {
-  const router = useRouter();
-  const [showForm, setShowForm] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [evaluationType, setEvaluationType] = useState<"" | "corporal" | "facial">("");
   const [formStep, setFormStep] = useState(1);
-  const totalSteps = 6;
+  const totalSteps = evaluationType === "facial" ? 4 : 6;
   const containerRef = useRef<HTMLDivElement>(null);
-  const introRef = useRef<HTMLDivElement>(null);
-  const topHalfRef = useRef<HTMLDivElement>(null);
-  const bottomHalfRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
-  const formContainerRef = useRef<HTMLFormElement>(null);
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const fixedLogoRef = useRef<HTMLDivElement>(null);
+  useGSAP({ scope: containerRef });
 
-  const { contextSafe } = useGSAP({ scope: containerRef });
-
-  const [formData, setFormData] = useState({
-    nome: "", indicadoPor: "", dataNascimento: "", rg: "", cpf: "",
-    estadoCivil: "", profissao: "", sexo: "", endereco: "", fone: "",
-    dataAvaliacao: "", nomeResponsavel: "", queixaPrincipal: "",
-    bebidasAlcoolicas: "", fumante: "", esporte: "", dormeBem: "",
-    restricaoAlimentar: "", dietas: "", acompanhamentoMedico: "",
-    boaDigestao: "", ingestaoAgua: "", cardiacas: "", pressao: "",
-    pressaoValor: "", gases: "", gestacoes: "", ultimaMenstruacao: "",
-    cicloRegular: "", biometria: "", tratamentoIndicado: "",
-    usaDIU: "", ginecologicas: "", ultimaConsultaMedica: "",
-    vasculares: "", reumaticas: "", alergias: "",
-    diabetes: "", glicemia: "", renal: "", proteseMetalica: "",
-    outrasDisfuncoes: "", outrasDisfuncoesQuais: "",
-    tratamentoMedico: "", tratamentoMedicoQual: "",
-    gravida: "", usandoMedicamento: "", usandoMedicamentoQual: "",
-    medicamentoProlongado: "", medicamentoProlongadoQual: "",
-    // Medidas do corpo (Biometria)
-    peso: "", busto: "", bracoEsq: "", bracoDir: "",
-    abdomen: "", cintura: "", quadril: "", culote: "",
-    coxaEsq: "", coxaDir: "", panturrilhaEsq: "", panturrilhaDir: ""
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    const target = e.target as HTMLInputElement;
+    const key = name as keyof typeof initialFormData;
     
     let formattedValue = value;
 
@@ -125,11 +186,17 @@ export default function Home() {
       }
     }
 
-    setFormData((prev) => ({ ...prev, [name]: formattedValue }));
+    if (target.type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [key]: target.checked }));
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, [key]: formattedValue }));
   };
 
   const handleRadioChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const key = name as keyof typeof initialFormData;
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const nextStep = () => {
@@ -179,64 +246,32 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // Apenas força o scroll para o topo e inicializa o formulário
     window.scrollTo(0, 0);
-    setShowForm(true);
-
-    // Como o header gigante foi removido, a logo fixa precisa estar sempre visível
     gsap.set(fixedLogoRef.current, { opacity: 1, scale: 1 });
   }, []);
 
-  const handleStart = contextSafe(() => {
-    try {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setShowForm(true);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      });
-
-      // 1. A logo gira e encolhe como se fosse um botão interativo
-      tl.to(logoRef.current, { scale: 0, rotation: 180, duration: 0.5, ease: "back.in(1.7)" }, 0);
-      
-      // 2. O conteúdo inferior esmaece
-      tl.to(".intro-content", { opacity: 0, y: 20, duration: 0.4 }, 0);
-      
-      // 3. Efeito de cartão se abrindo (metade superior sobe, inferior desce)
-      tl.to(topHalfRef.current, { yPercent: -100, duration: 0.8, ease: "power3.inOut" }, 0.4);
-      tl.to(bottomHalfRef.current, { yPercent: 100, duration: 0.8, ease: "power3.inOut" }, 0.4);
-      
-      // 4. Esconde a intro para permitir interação com o formulário
-      tl.set(introRef.current, { display: "none" });
-    } catch (error) {
-      // Fallback de segurança para celulares caso o GSAP falhe no carregamento inicial
-      setShowForm(true);
-      if (introRef.current) introRef.current.style.display = 'none';
-      window.scrollTo(0, 0);
-    }
-  });
-
   useGSAP(() => {
-    if (showForm) {
-      // Anima o container principal do formulário
-      gsap.fromTo(formContainerRef.current, 
-        { opacity: 0, scale: 0.95, y: 30 }, 
-        { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out" }
-      );
-      
-      // Anima os elementos internos sequencialmente
-      gsap.fromTo(".form-element",
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power2.out", delay: 0.1 }
-      );
-    }
-  }, [showForm]);
+    if (!formContainerRef.current) return;
+
+    gsap.set(fixedLogoRef.current, { opacity: 1, scale: 1 });
+
+    gsap.fromTo(
+      formContainerRef.current,
+      { opacity: 0, scale: 0.95, y: 30 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out" }
+    );
+
+    gsap.fromTo(
+      ".form-element",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power2.out", delay: 0.1 }
+    );
+  }, [evaluationType]);
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-gray-50 font-sans overflow-hidden">
-      
       {/* --- FORMULÁRIO (REVELADO APÓS ANIMAÇÃO) --- */}
-      <div className={`min-h-screen py-8 px-4 sm:px-6 lg:px-8 relative ${!showForm ? 'opacity-0 pointer-events-none' : ''}`}>
+      <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 relative">
           
           {/* Background Image da Clínica */}
           <div className="absolute inset-0 z-0 opacity-5 pointer-events-none overflow-hidden">
@@ -267,7 +302,43 @@ export default function Home() {
             <span className="text-[#E27E82] font-clicker text-lg sm:text-xl mt-0.5 leading-none">lady</span>
           </div>
 
-          <form className="p-8 sm:p-10 space-y-8 relative z-10 step-content" onSubmit={(e) => e.preventDefault()}>
+          <div ref={formContainerRef} className="p-8 sm:p-10 space-y-8 relative z-10">
+            {evaluationType === "" ? (
+              <div className="step-content mt-8">
+                <div className="space-y-6 form-element opacity-0 max-w-xl mx-auto">
+                  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 text-center">
+                    Escolha seu tipo de avaliação
+                  </h2>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEvaluationType("corporal");
+                        setFormStep(1);
+                      }}
+                      className="w-full px-8 py-5 rounded-2xl bg-white border border-pink-200 shadow-sm hover:shadow-md transition-all active:scale-[0.99]"
+                    >
+                      <div className="text-[#E27E82] font-clicker text-4xl leading-none">Corporal</div>
+                      <div className="text-gray-500 text-base mt-1">Avaliação corporal completa</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEvaluationType("facial");
+                        setFormStep(1);
+                      }}
+                      className="w-full px-8 py-5 rounded-2xl bg-white border border-pink-200 shadow-sm hover:shadow-md transition-all active:scale-[0.99]"
+                    >
+                      <div className="text-[#E27E82] font-clicker text-4xl leading-none">Facial</div>
+                      <div className="text-gray-500 text-base mt-1">Avaliação facial personalizada</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form className="space-y-8 step-content" onSubmit={(e) => e.preventDefault()}>
             
             {/* ETAPA 1: Dados Pessoais */}
             <div className={formStep === 1 ? 'block animate-in fade-in slide-in-from-right-4 duration-500' : 'hidden print:block'}>
@@ -335,6 +406,13 @@ export default function Home() {
                     <input type="tel" name="fone" value={formData.fone} onChange={handleChange} className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg" />
                   </div>
 
+                  {evaluationType === "facial" && (
+                    <div className="space-y-1">
+                      <label className="text-base text-gray-600">E-mail:</label>
+                      <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg" />
+                    </div>
+                  )}
+
                   <div className="space-y-1">
                     <label className="text-base text-gray-600">Data da Avaliação:</label>
                     <input type="date" name="dataAvaliacao" value={formData.dataAvaliacao} onChange={handleChange} className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-base" />
@@ -348,7 +426,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ETAPA 2: Queixa e Hábitos */}
+            {evaluationType === "corporal" && (
+            <>
             <div className={formStep === 2 ? 'block animate-in fade-in slide-in-from-right-4 duration-500' : 'hidden print:block'}>
               {/* Queixa Principal */}
               <div className="space-y-2 form-element opacity-0 mb-8">
@@ -542,7 +621,7 @@ export default function Home() {
                         src="/corpo-referencia.svg"
                         alt="Modelo Feminino Referência"
                         fill
-                        className="object-contain"
+  className="object-contain -scale-x-100"
                       />
                     </div>
                   </div>
@@ -638,6 +717,301 @@ export default function Home() {
               </div>
             </div>
 
+            </>
+            )}
+
+            {evaluationType === "facial" && (
+              <>
+                <div className={formStep === 2 ? 'block animate-in fade-in slide-in-from-right-4 duration-500' : 'hidden print:block'}>
+                  <div className="space-y-2 form-element opacity-0 mb-8">
+                    <h3 className="text-xl font-semibold text-gray-800">Queixa Principal:</h3>
+                    <textarea
+                      name="queixaPrincipal"
+                      value={formData.queixaPrincipal}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full border border-gray-300 rounded-md p-3 focus:border-[#E27E82] focus:ring-1 focus:ring-[#E27E82] outline-none transition-all resize-none bg-gray-50/50 text-gray-800 font-medium text-lg"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4 form-element opacity-0">
+                      <h3 className="text-xl font-semibold border-b-2 border-[#E27E82] pb-1 text-gray-800 inline-block">
+                        Dados Clínicos
+                      </h3>
+
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Fototipo</div>
+                          <div className="grid grid-cols-3 gap-2">
+                            {["I", "II", "III", "IV", "V", "VI"].map((ft) => (
+                              <label key={ft} className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="facialFototipo"
+                                  value={ft}
+                                  checked={formData.facialFototipo === ft}
+                                  onChange={handleChange}
+                                  className="accent-[#E27E82] w-4 h-4"
+                                />
+                                <span className="text-base text-gray-700">{ft}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Lesões</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <CheckboxItem label="Comedões" name="facialLesoesComedoes" checked={!!formData.facialLesoesComedoes} onChange={handleChange} />
+                            <CheckboxItem label="Pústulas" name="facialLesoesPustulas" checked={!!formData.facialLesoesPustulas} onChange={handleChange} />
+                            <CheckboxItem label="Pápulas" name="facialLesoesPapulas" checked={!!formData.facialLesoesPapulas} onChange={handleChange} />
+                            <CheckboxItem label="Nódulos" name="facialLesoesNodulos" checked={!!formData.facialLesoesNodulos} onChange={handleChange} />
+                            <CheckboxItem label="Milium" name="facialLesoesMilium" checked={!!formData.facialLesoesMilium} onChange={handleChange} />
+                            <CheckboxItem label="Verrugas" name="facialLesoesVerrugas" checked={!!formData.facialLesoesVerrugas} onChange={handleChange} />
+                            <CheckboxItem label="Necrose" name="facialLesoesNecrose" checked={!!formData.facialLesoesNecrose} onChange={handleChange} />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Biotipo Cutâneo</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {[
+                              { label: "Normal", value: "Normal" },
+                              { label: "Mista", value: "Mista" },
+                              { label: "Alípica", value: "Alípica" },
+                              { label: "Lipídica", value: "Lipídica" },
+                            ].map((opt) => (
+                              <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="facialBiotipoCutaneo"
+                                  value={opt.value}
+                                  checked={formData.facialBiotipoCutaneo === opt.value}
+                                  onChange={handleChange}
+                                  className="accent-[#E27E82] w-4 h-4"
+                                />
+                                <span className="text-base text-gray-700">{opt.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Acne" name="facialAcne" value={formData.facialAcne} onChange={handleRadioChange} />
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Manchas (melanina)</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <CheckboxItem label="Efélides" name="facialMelaninaEfelides" checked={!!formData.facialMelaninaEfelides} onChange={handleChange} />
+                            <CheckboxItem label="Hipocromia" name="facialMelaninaHipocromia" checked={!!formData.facialMelaninaHipocromia} onChange={handleChange} />
+                            <CheckboxItem label="Acromia" name="facialMelaninaAcromia" checked={!!formData.facialMelaninaAcromia} onChange={handleChange} />
+                            <CheckboxItem label="Hipercromia" name="facialMelaninaHipercromia" checked={!!formData.facialMelaninaHipercromia} onChange={handleChange} />
+                            <CheckboxItem label="Melasma" name="facialMelaninaMelasma" checked={!!formData.facialMelaninaMelasma} onChange={handleChange} />
+                            <CheckboxItem label="Cloasma" name="facialMelaninaCloasma" checked={!!formData.facialMelaninaCloasma} onChange={handleChange} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={formStep === 3 ? 'block animate-in fade-in slide-in-from-right-4 duration-500' : 'hidden print:block'}>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4 form-element opacity-0">
+                      <h3 className="text-xl font-semibold border-b-2 border-[#E27E82] pb-1 text-gray-800 inline-block">
+                        Condições e Histórico
+                      </h3>
+
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Alterações Vasculares</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <CheckboxItem label="Petéquias" name="facialVascularPetequias" checked={!!formData.facialVascularPetequias} onChange={handleChange} />
+                            <CheckboxItem label="Hematoma" name="facialVascularHematoma" checked={!!formData.facialVascularHematoma} onChange={handleChange} />
+                            <CheckboxItem label="Telangectasias" name="facialVascularTelangectasias" checked={!!formData.facialVascularTelangectasias} onChange={handleChange} />
+                            <CheckboxItem label="Angioma" name="facialVascularAngioma" checked={!!formData.facialVascularAngioma} onChange={handleChange} />
+                            <CheckboxItem label="Cianose" name="facialVascularCianose" checked={!!formData.facialVascularCianose} onChange={handleChange} />
+                            <CheckboxItem label="Eritema" name="facialVascularEritema" checked={!!formData.facialVascularEritema} onChange={handleChange} />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Conteúdo Líquido</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <CheckboxItem label="Bolha" name="facialConteudoLiquidoBolha" checked={!!formData.facialConteudoLiquidoBolha} onChange={handleChange} />
+                            <CheckboxItem label="Pústula" name="facialConteudoLiquidoPustula" checked={!!formData.facialConteudoLiquidoPustula} onChange={handleChange} />
+                            <CheckboxItem label="Vesícula" name="facialConteudoLiquidoVesicula" checked={!!formData.facialConteudoLiquidoVesicula} onChange={handleChange} />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Lesões de Pele</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <CheckboxItem label="Crosta" name="facialLesaoPeleCrosta" checked={!!formData.facialLesaoPeleCrosta} onChange={handleChange} />
+                            <CheckboxItem label="Ulceração" name="facialLesaoPeleUlceracao" checked={!!formData.facialLesaoPeleUlceracao} onChange={handleChange} />
+                            <CheckboxItem label="Fístula" name="facialLesaoPeleFistula" checked={!!formData.facialLesaoPeleFistula} onChange={handleChange} />
+                            <CheckboxItem label="Escoriação" name="facialLesaoPeleEscoriacao" checked={!!formData.facialLesaoPeleEscoriacao} onChange={handleChange} />
+                            <CheckboxItem label="Descamação" name="facialLesaoPeleDescamacao" checked={!!formData.facialLesaoPeleDescamacao} onChange={handleChange} />
+                            <CheckboxItem label="Fissura" name="facialLesaoPeleFissura" checked={!!formData.facialLesaoPeleFissura} onChange={handleChange} />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="text-base font-semibold text-gray-700">Sequelas</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <CheckboxItem label="Atrofia" name="facialSequelaAtrofia" checked={!!formData.facialSequelaAtrofia} onChange={handleChange} />
+                            <CheckboxItem label="Cicatriz" name="facialSequelaCicatriz" checked={!!formData.facialSequelaCicatriz} onChange={handleChange} />
+                            <CheckboxItem label="Alterações da queratinização" name="facialSequelaQueratinizacao" checked={!!formData.facialSequelaQueratinizacao} onChange={handleChange} />
+                            <CheckboxItem label="Eczema" name="facialSequelaEczema" checked={!!formData.facialSequelaEczema} onChange={handleChange} />
+                            <CheckboxItem label="Hiperqueratose" name="facialSequelaHiperqueratose" checked={!!formData.facialSequelaHiperqueratose} onChange={handleChange} />
+                            <CheckboxItem label="Psoríase" name="facialSequelaPsoriase" checked={!!formData.facialSequelaPsoriase} onChange={handleChange} />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Alergia" name="facialAlergia" value={formData.facialAlergia} onChange={handleRadioChange} />
+                          <RadioGroup label="Diabetes" name="facialDiabetes" value={formData.facialDiabetes} onChange={handleRadioChange} />
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Neoplasias" name="facialNeoplasias" value={formData.facialNeoplasias} onChange={handleRadioChange} />
+                          {formData.facialNeoplasias === "sim" && (
+                            <input
+                              type="text"
+                              name="facialNeoplasiasQual"
+                              value={formData.facialNeoplasiasQual}
+                              onChange={handleChange}
+                              placeholder="Qual?"
+                              className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Doenças de Pele" name="facialDoencasPele" value={formData.facialDoencasPele} onChange={handleRadioChange} />
+                          {formData.facialDoencasPele === "sim" && (
+                            <input
+                              type="text"
+                              name="facialDoencasPeleQual"
+                              value={formData.facialDoencasPeleQual}
+                              onChange={handleChange}
+                              placeholder="Qual?"
+                              className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Doenças Sistêmicas" name="facialDoencasSistemicas" value={formData.facialDoencasSistemicas} onChange={handleRadioChange} />
+                          {formData.facialDoencasSistemicas === "sim" && (
+                            <input
+                              type="text"
+                              name="facialDoencasSistemicasQual"
+                              value={formData.facialDoencasSistemicasQual}
+                              onChange={handleChange}
+                              placeholder="Qual?"
+                              className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Toma Medicamentos" name="facialTomaMedicamentos" value={formData.facialTomaMedicamentos} onChange={handleRadioChange} />
+                          {formData.facialTomaMedicamentos === "sim" && (
+                            <input
+                              type="text"
+                              name="facialTomaMedicamentosQual"
+                              value={formData.facialTomaMedicamentosQual}
+                              onChange={handleChange}
+                              placeholder="Qual?"
+                              className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <RadioGroup label="Epilepsia" name="facialEpilepsia" value={formData.facialEpilepsia} onChange={handleRadioChange} />
+                          <RadioGroup label="Pino/Placa metálica no rosto" name="facialPinoPlacaMetalicaRosto" value={formData.facialPinoPlacaMetalicaRosto} onChange={handleRadioChange} />
+                          <RadioGroup label="Tratamento estético recente" name="facialTratamentoEsteticoRecente" value={formData.facialTratamentoEsteticoRecente} onChange={handleRadioChange} />
+                          <RadioGroup label="Usa lentes de contato" name="facialUsaLentesContato" value={formData.facialUsaLentesContato} onChange={handleRadioChange} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 form-element opacity-0">
+                      <h3 className="text-xl font-semibold border-b-2 border-[#E27E82] pb-1 text-gray-800 inline-block">
+                        Produtos e Tratamento
+                      </h3>
+
+                      <div className="space-y-3">
+                        <div className="text-base font-semibold text-gray-700">Produtos utilizados no dia a dia</div>
+                        <textarea
+                          name="facialProdutosDiaADia"
+                          value={formData.facialProdutosDiaADia}
+                          onChange={handleChange}
+                          rows={6}
+                          className="w-full border border-gray-300 rounded-md p-3 focus:border-[#E27E82] focus:ring-1 focus:ring-[#E27E82] outline-none transition-all resize-none bg-gray-50/50 text-gray-800 font-medium text-lg"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="text-base font-semibold text-gray-700">Tratamento Indicado</div>
+                        <textarea
+                          name="facialTratamentoIndicado"
+                          value={formData.facialTratamentoIndicado}
+                          onChange={handleChange}
+                          rows={8}
+                          className="w-full border border-gray-300 rounded-md p-3 focus:border-[#E27E82] focus:ring-1 focus:ring-[#E27E82] outline-none transition-all resize-none bg-gray-50/50 text-gray-800 font-medium text-lg"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={formStep === 4 ? 'block animate-in fade-in slide-in-from-right-4 duration-500' : 'hidden print:block'}>
+                  <div className="space-y-4 form-element opacity-0">
+                    <h3 className="text-xl font-semibold border-b-2 border-[#E27E82] pb-1 text-gray-800 inline-block">
+                      Ficha de Acompanhamento
+                    </h3>
+                    <div className="space-y-6">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-500 font-medium text-lg w-6">{i}.</span>
+                            <span className="text-gray-700 text-base whitespace-nowrap">Data:</span>
+                            <input type="date" className="border-b border-gray-300 focus:border-[#E27E82] outline-none text-center bg-transparent text-gray-800 font-medium text-base" />
+                          </div>
+                          <div className="pl-8">
+                            <input type="text" placeholder="Anotações da sessão..." className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium text-lg pb-1" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-10 mt-8 border-t border-gray-200 form-element opacity-0">
+                    <h4 className="font-bold text-gray-800 underline decoration-[#E27E82] mb-2 text-lg">TERMO DE RESPONSABILIDADE</h4>
+                    <p className="text-base text-gray-600 font-medium mb-12 uppercase">
+                      As declarações acima são expressões da verdade, não cabendo ao profissional a responsabilidade por fatos omitidos ou falsos.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-12 sm:gap-4 px-4 sm:px-12">
+                      <div className="text-center w-full sm:w-64">
+                        <div className="border-b border-gray-400 mb-2"></div>
+                        <p className="text-base font-medium text-gray-700">Ass. do Profissional</p>
+                      </div>
+                      <div className="text-center w-full sm:w-64">
+                        <div className="border-b border-gray-400 mb-2"></div>
+                        <p className="text-base font-medium text-gray-700">Ass. do Cliente</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* Navigation Buttons (Bottom Bar) */}
             <div className="flex flex-col-reverse sm:flex-row items-center justify-between pt-8 border-t border-gray-100 mt-8 print:hidden form-element opacity-0 gap-4">
               <div className="w-full sm:w-auto">
@@ -690,7 +1064,9 @@ export default function Home() {
                 <div className="absolute inset-0 bg-white/20 w-full animate-[shine_2s_infinite]"></div>
               </div>
             </div>
-          </form>
+              </form>
+            )}
+          </div>
       </div>
     </div>
   );

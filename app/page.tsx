@@ -19,28 +19,26 @@ export default function Home() {
 
   const { contextSafe } = useGSAP({ scope: containerRef });
 
-  const handleStart = contextSafe(() => {
+  const handleStart = () => {
     try {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          router.push('/avaliacao');
-        }
+      const run = contextSafe(() => {
+        const tl = gsap.timeline({
+          onComplete: () => {
+            router.push("/avaliacao");
+          },
+        });
+
+        tl.to(logoRef.current, { scale: 0, rotation: 180, duration: 0.5, ease: "back.in(1.7)" }, 0);
+        tl.to(".intro-content", { opacity: 0, y: 20, duration: 0.4 }, 0);
+        tl.to(topHalfRef.current, { yPercent: -100, duration: 0.8, ease: "power3.inOut" }, 0.4);
+        tl.to(bottomHalfRef.current, { yPercent: 100, duration: 0.8, ease: "power3.inOut" }, 0.4);
       });
 
-      // 1. A logo gira e encolhe como se fosse um botão interativo
-      tl.to(logoRef.current, { scale: 0, rotation: 180, duration: 0.5, ease: "back.in(1.7)" }, 0);
-      
-      // 2. O conteúdo inferior esmaece
-      tl.to(".intro-content", { opacity: 0, y: 20, duration: 0.4 }, 0);
-      
-      // 3. Efeito de cartão se abrindo (metade superior sobe, inferior desce)
-      tl.to(topHalfRef.current, { yPercent: -100, duration: 0.8, ease: "power3.inOut" }, 0.4);
-      tl.to(bottomHalfRef.current, { yPercent: 100, duration: 0.8, ease: "power3.inOut" }, 0.4);
-      
-    } catch (error) {
-      router.push('/avaliacao');
+      run();
+    } catch {
+      router.push("/avaliacao");
     }
-  });
+  };
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-gray-50 font-sans overflow-hidden">
