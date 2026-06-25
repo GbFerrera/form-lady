@@ -84,7 +84,7 @@ const initialFormData = {
   dataAvaliacao: "", nomeResponsavel: "", queixaPrincipal: "",
   bebidasAlcoolicas: "", fumante: "", esporte: "", dormeBem: "",
   restricaoAlimentar: "", dietas: "", acompanhamentoMedico: "",
-  boaDigestao: "", ingestaoAgua: "", cardiacas: "", pressao: "",
+  boaDigestao: "", ingestaoAgua: "", ingestaoAguaQuantidade: "", cardiacas: "", pressao: "",
   pressaoValor: "", gases: "", gestacoes: "", ultimaMenstruacao: "",
   cicloRegular: "", biometria: "", tratamentoIndicado: "",
   usaDIU: "", ginecologicas: "", ultimaConsultaMedica: "",
@@ -97,6 +97,11 @@ const initialFormData = {
   peso: "", busto: "", bracoEsq: "", bracoDir: "",
   abdomen: "", cintura: "", quadril: "", culote: "",
   coxaEsq: "", coxaDir: "", panturrilhaEsq: "", panturrilhaDir: "",
+  gluteo1Data: "", gluteo1Max: "", gluteo1Medio: "", gluteo1Min: "", gluteo1Peso: "",
+  gluteo2Data: "", gluteo2Max: "", gluteo2Medio: "", gluteo2Min: "", gluteo2Peso: "",
+  gluteo3Data: "", gluteo3Max: "", gluteo3Medio: "", gluteo3Min: "", gluteo3Peso: "",
+  gluteo4Data: "", gluteo4Max: "", gluteo4Medio: "", gluteo4Min: "", gluteo4Peso: "",
+  gluteo5Data: "", gluteo5Max: "", gluteo5Medio: "", gluteo5Min: "", gluteo5Peso: "",
   facialFototipo: "",
   facialBiotipoCutaneo: "",
   facialAcne: "",
@@ -146,6 +151,7 @@ const initialFormData = {
   facialTomaMedicamentosQual: "",
   facialEpilepsia: "",
   facialPinoPlacaMetalicaRosto: "",
+  facialPinoPlacaMetalicaRostoQual: "",
   facialTratamentoEsteticoRecente: "",
   facialUsaLentesContato: "",
   facialProdutosDiaADia: "",
@@ -466,6 +472,19 @@ export default function Home() {
                     <RadioGroup label="- Acompanhamento Médico?" name="acompanhamentoMedico" value={formData.acompanhamentoMedico} onChange={handleRadioChange} />
                     <RadioGroup label="- Boa Digestão?" name="boaDigestao" value={formData.boaDigestao} onChange={handleRadioChange} />
                     <RadioGroup label="- Ingestão de água?" name="ingestaoAgua" value={formData.ingestaoAgua} onChange={handleRadioChange} />
+                    {formData.ingestaoAgua !== "" && (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-700 text-base">Quantidade (aprox. por dia):</span>
+                        <input
+                          type="text"
+                          name="ingestaoAguaQuantidade"
+                          value={formData.ingestaoAguaQuantidade}
+                          onChange={handleChange}
+                          placeholder="Ex.: 2L"
+                          className="mt-2 sm:mt-0 w-full sm:w-40 border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium text-lg text-right"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -623,6 +642,86 @@ export default function Home() {
                         fill
   className="object-contain -scale-x-100"
                       />
+                    </div>
+                  </div>
+
+                  <div className="w-full max-w-2xl bg-white/50 backdrop-blur-sm rounded-xl border border-gray-100 p-4 shadow-sm">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Glúteo</h4>
+                    <div className="w-full overflow-x-auto">
+                      <table className="min-w-[760px] w-full border-collapse">
+                        <thead>
+                          <tr className="text-left text-sm text-gray-600">
+                            <th className="py-2 px-2 border-b border-gray-200">Sessões</th>
+                            <th className="py-2 px-2 border-b border-gray-200">Data</th>
+                            <th className="py-2 px-2 border-b border-gray-200">Glúteo máximo (Superior)</th>
+                            <th className="py-2 px-2 border-b border-gray-200">Glúteo médio</th>
+                            <th className="py-2 px-2 border-b border-gray-200">Glúteo mínimo (Inferior)</th>
+                            <th className="py-2 px-2 border-b border-gray-200">Peso</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-sm">
+                          {[
+                            { n: 1, label: "1ª Sessão" },
+                            { n: 2, label: "2ª Sessão" },
+                            { n: 3, label: "3ª Sessão" },
+                            { n: 4, label: "4ª Sessão" },
+                            { n: 5, label: "5ª Sessão" },
+                          ].map((row) => (
+                            <tr key={row.n} className="text-gray-800">
+                              <td className="py-2 px-2 border-b border-gray-100 whitespace-nowrap font-medium">{row.label}</td>
+                              <td className="py-2 px-2 border-b border-gray-100">
+                                <input
+                                  type="date"
+                                  name={`gluteo${row.n}Data`}
+                                  value={formData[`gluteo${row.n}Data` as keyof typeof formData] as string}
+                                  onChange={handleChange}
+                                  className="w-40 border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium"
+                                />
+                              </td>
+                              <td className="py-2 px-2 border-b border-gray-100">
+                                <input
+                                  type="text"
+                                  name={`gluteo${row.n}Max`}
+                                  value={formData[`gluteo${row.n}Max` as keyof typeof formData] as string}
+                                  onChange={handleChange}
+                                  placeholder="cm"
+                                  className="w-28 border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium"
+                                />
+                              </td>
+                              <td className="py-2 px-2 border-b border-gray-100">
+                                <input
+                                  type="text"
+                                  name={`gluteo${row.n}Medio`}
+                                  value={formData[`gluteo${row.n}Medio` as keyof typeof formData] as string}
+                                  onChange={handleChange}
+                                  placeholder="cm"
+                                  className="w-28 border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium"
+                                />
+                              </td>
+                              <td className="py-2 px-2 border-b border-gray-100">
+                                <input
+                                  type="text"
+                                  name={`gluteo${row.n}Min`}
+                                  value={formData[`gluteo${row.n}Min` as keyof typeof formData] as string}
+                                  onChange={handleChange}
+                                  placeholder="cm"
+                                  className="w-28 border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium"
+                                />
+                              </td>
+                              <td className="py-2 px-2 border-b border-gray-100">
+                                <input
+                                  type="text"
+                                  name={`gluteo${row.n}Peso`}
+                                  value={formData[`gluteo${row.n}Peso` as keyof typeof formData] as string}
+                                  onChange={handleChange}
+                                  placeholder="kg"
+                                  className="w-20 border-b border-gray-300 focus:border-[#E27E82] outline-none bg-transparent text-gray-800 font-medium"
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
@@ -934,6 +1033,16 @@ export default function Home() {
                         <div className="space-y-2">
                           <RadioGroup label="Epilepsia" name="facialEpilepsia" value={formData.facialEpilepsia} onChange={handleRadioChange} />
                           <RadioGroup label="Pino/Placa metálica no rosto" name="facialPinoPlacaMetalicaRosto" value={formData.facialPinoPlacaMetalicaRosto} onChange={handleRadioChange} />
+                          {formData.facialPinoPlacaMetalicaRosto === "sim" && (
+                            <input
+                              type="text"
+                              name="facialPinoPlacaMetalicaRostoQual"
+                              value={formData.facialPinoPlacaMetalicaRostoQual}
+                              onChange={handleChange}
+                              placeholder="Qual?"
+                              className="w-full border-b border-gray-300 focus:border-[#E27E82] outline-none py-1 bg-transparent transition-colors text-gray-800 font-medium text-lg"
+                            />
+                          )}
                           <RadioGroup label="Tratamento estético recente" name="facialTratamentoEsteticoRecente" value={formData.facialTratamentoEsteticoRecente} onChange={handleRadioChange} />
                           <RadioGroup label="Usa lentes de contato" name="facialUsaLentesContato" value={formData.facialUsaLentesContato} onChange={handleRadioChange} />
                         </div>
